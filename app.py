@@ -6,18 +6,30 @@ from bot import process_message
 app = Flask(__name__)
 
 
-CONFIRMATION_CODE = "4519411f"
+CONFIRMATION_CODE = "66ca59e9"
+
 
 
 @app.route("/", methods=["POST"])
 def callback():
 
-    data = request.json
+
+    data = request.get_json()
+
 
     print(data)
 
 
-    # Подтверждение сервера VK
+
+    if not data:
+
+        return "empty"
+
+
+
+    # =================================
+    # Подтверждение Callback API VK
+    # =================================
 
     if data["type"] == "confirmation":
 
@@ -25,24 +37,57 @@ def callback():
 
 
 
-    # Новое сообщение от пользователя
+    # =================================
+    # Новое сообщение пользователю
+    # =================================
 
-    if data["type"] == "message_new":
+    elif data["type"] == "message_new":
 
-        message = data["object"]["message"]
 
-        process_message(
-            message
+        try:
+
+            message = data["object"]["message"]
+
+
+            process_message(
+                message
+            )
+
+
+        except Exception as error:
+
+            print(
+                "Ошибка обработки сообщения:",
+                error
+            )
+
+
+
+    # =================================
+    # Остальные события игнорируем
+    # =================================
+
+    else:
+
+        print(
+            "Неизвестное событие:",
+            data["type"]
         )
+
 
 
     return "ok"
 
 
 
+
 if __name__ == "__main__":
 
+
     app.run(
+
         host="0.0.0.0",
+
         port=5000
+
     )

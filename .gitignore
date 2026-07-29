@@ -1,15 +1,5 @@
-# Virtual environment
 venv/
-
-# Python cache
+.env
+users.db
 __pycache__/
 *.pyc
-
-# Database
-*.db
-
-# Environment variables
-.env
-
-# IDE
-.vscode/

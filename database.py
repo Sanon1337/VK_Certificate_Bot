@@ -1,7 +1,5 @@
 import sqlite3
 
-from datetime import datetime
-
 DB_NAME = "users.db"
 
 
@@ -10,6 +8,9 @@ def create_database():
     conn = sqlite3.connect(DB_NAME)
 
     cursor = conn.cursor()
+
+
+    # Таблица пользователей
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
@@ -27,9 +28,44 @@ def create_database():
             certificate_sent INTEGER DEFAULT 0
 
         )
-    """)    
+    """)
+
+
+
+    # Таблица источников
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS sources (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            ref TEXT UNIQUE,
+
+            users_count INTEGER DEFAULT 0
+
+        )
+    """)
+
+    # Таблица событий пользователей
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS events (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            vk_id INTEGER,
+
+            event TEXT,
+
+            event_date TEXT
+
+            UNIQUE(vk_id,event)
+
+        )
+    """)
 
     conn.commit()
+
     conn.close()
 
 def add_user(vk_id, ref=None):
@@ -37,6 +73,24 @@ def add_user(vk_id, ref=None):
     conn = sqlite3.connect(DB_NAME)
 
     cursor = conn.cursor()
+
+
+    cursor.execute(
+        "SELECT id FROM users WHERE vk_id=?",
+        (vk_id,)
+    )
+
+
+    user = cursor.fetchone()
+
+
+
+    if user:
+
+        conn.close()
+
+        return False
+
 
 
     cursor.execute("""
@@ -47,14 +101,12 @@ def add_user(vk_id, ref=None):
             first_visit
         )
 
-        VALUES (?, ?, datetime('now'))
-
-
-        ON CONFLICT(vk_id)
-
-        DO UPDATE SET
-
-            ref = COALESCE(users.ref, excluded.ref)
+        VALUES
+        (
+            ?,
+            ?,
+            datetime('now')
+        )
 
     """,
     (
@@ -66,6 +118,9 @@ def add_user(vk_id, ref=None):
     conn.commit()
 
     conn.close()
+
+
+    return True
 
 def update_subscription(vk_id):
 
@@ -173,13 +228,11 @@ def get_statistics():
     # Источники
 
     cursor.execute(
-        """
-        SELECT ref, COUNT(*)
-        FROM users
-        GROUP BY ref
-        """
-    )
-
+    """
+    SELECT ref, users_count
+    FROM sources
+    """
+)
 
     refs = cursor.fetchall()
 
@@ -188,3 +241,111 @@ def get_statistics():
 
 
     return total, subscribed, certificates, refs
+
+def add_source(ref):
+
+    if not ref:
+        ref = "unknown"
+
+
+    conn = sqlite3.connect(DB_NAME)
+
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+        INSERT INTO sources
+        (
+            ref,
+            users_count
+        )
+
+        VALUES
+        (
+            ?,
+            1
+        )
+
+
+        ON CONFLICT(ref)
+
+        DO UPDATE SET
+
+            users_count = users_count + 1
+
+    """,
+    (
+        ref,
+    ))
+
+
+    conn.commit()
+
+    conn.close()
+
+def add_event(vk_id, event):
+
+    if event_exists(vk_id, event):
+        return False
+
+
+    conn = sqlite3.connect(DB_NAME)
+
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+        INSERT INTO events
+        (
+            vk_id,
+            event,
+            event_date
+        )
+
+        VALUES
+        (
+            ?,
+            ?,
+            datetime('now')
+        )
+
+    """,
+    (
+        vk_id,
+        event
+    ))
+
+
+    conn.commit()
+
+    conn.close()
+
+
+    return True
+
+def event_exists(vk_id, event):
+
+    conn = sqlite3.connect(DB_NAME)
+
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+        SELECT id
+        FROM events
+        WHERE vk_id = ?
+        AND event = ?
+    """,
+    (
+        vk_id,
+        event
+    ))
+
+
+    result = cursor.fetchone()
+
+
+    conn.close()
+
+
+    return result is not None
