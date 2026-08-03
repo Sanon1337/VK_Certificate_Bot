@@ -2,11 +2,10 @@ from flask import Flask, request
 
 from bot import process_message
 
+from config import CONFIRMATION_CODE
 
 app = Flask(__name__)
 
-
-CONFIRMATION_CODE = "66ca59e9"
 
 
 

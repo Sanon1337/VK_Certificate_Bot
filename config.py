@@ -25,6 +25,7 @@ ADMIN_ID = os.getenv(
     "ADMIN_ID"
 )
 
+CONFIRMATION_CODE = os.getenv("CONFIRMATION_CODE")
 
 
 # =====================================
