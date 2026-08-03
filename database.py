@@ -55,11 +55,11 @@ def create_database():
 
             vk_id INTEGER,
 
-            event TEXT,
+            event_name TEXT,
 
-            event_date TEXT
+            event_date TEXT,
 
-            UNIQUE(vk_id,event)
+            UNIQUE(vk_id,event_name)
 
         )
     """)
@@ -298,7 +298,7 @@ def add_event(vk_id, event):
         INSERT INTO events
         (
             vk_id,
-            event,
+            event_name,
             event_date
         )
 
@@ -334,7 +334,7 @@ def event_exists(vk_id, event):
         SELECT id
         FROM events
         WHERE vk_id = ?
-        AND event = ?
+        AND event_name = ?
     """,
     (
         vk_id,
