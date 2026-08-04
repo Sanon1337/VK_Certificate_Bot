@@ -70,7 +70,7 @@ ADMIN_ID = int(
 
 
 # =====================================
-# Файл сертификата
+# Файлы изображений
 # =====================================
 
 BASE_DIR = os.path.dirname(
@@ -83,4 +83,8 @@ CERTIFICATE_PATH = os.path.join(
     "certificate.jpg"
 )
 
-REMINDER_IMAGE_PATH = "reminder.jpg"
+
+REMINDER_IMAGE_PATH = os.path.join(
+    BASE_DIR,
+    "reminder.jpg"
+)

@@ -351,7 +351,6 @@ def event_exists(vk_id, event):
 
 
     return result is not None
-<<<<<<< HEAD
 
 def get_users_for_reminder():
 
@@ -402,5 +401,3 @@ def update_reminder(vk_id):
     conn.commit()
 
     conn.close()
-=======
->>>>>>> ffdaf9727c0236415ca2961709e7c04d4ec55b9f

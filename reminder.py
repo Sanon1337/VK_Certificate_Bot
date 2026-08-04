@@ -4,7 +4,8 @@ import vk_api
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 
 from config import (
-    VK_TOKEN
+    VK_TOKEN,
+    REMINDER_IMAGE_PATH
 )
 
 from database import (
@@ -22,6 +23,10 @@ vk_session = vk_api.VkApi(
 )
 
 vk = vk_session.get_api()
+
+upload = vk_api.VkUpload(
+    vk_session
+)
 
 
 
@@ -61,11 +66,25 @@ def create_keyboard():
 
 def send_reminder(user_id):
 
+
+    photo = upload.photo_messages(
+        REMINDER_IMAGE_PATH
+    )
+
+
+    attachment = (
+        f"photo{photo[0]['owner_id']}_"
+        f"{photo[0]['id']}"
+    )
+
+
     vk.messages.send(
 
         user_id=user_id,
 
         random_id=0,
+
+        attachment=attachment,
 
         message="""
 🎁 Остался всего один шаг...
