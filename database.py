@@ -25,7 +25,9 @@ def create_database():
 
             subscribed INTEGER DEFAULT 0,
 
-            certificate_sent INTEGER DEFAULT 0
+            certificate_sent INTEGER DEFAULT 0,
+
+            reminder_sent INTEGER DEFAULT 0
 
         )
     """)
@@ -57,7 +59,7 @@ def create_database():
 
             event TEXT,
 
-            event_date TEXT
+            event_date TEXT,
 
             UNIQUE(vk_id,event)
 
@@ -349,3 +351,53 @@ def event_exists(vk_id, event):
 
 
     return result is not None
+
+def get_users_for_reminder():
+
+    conn = sqlite3.connect(DB_NAME)
+
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+        SELECT vk_id
+        FROM users
+        WHERE certificate_sent = 0
+        AND reminder_sent = 0
+        AND datetime(first_visit) <= datetime('now', '-3 hours')
+    """)
+
+
+    users = cursor.fetchall()
+
+
+    conn.close()
+
+
+    return [
+        user[0]
+        for user in users
+    ]
+
+
+
+def update_reminder(vk_id):
+
+    conn = sqlite3.connect(DB_NAME)
+
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+        UPDATE users
+        SET reminder_sent = 1
+        WHERE vk_id = ?
+    """,
+    (
+        vk_id,
+    ))
+
+
+    conn.commit()
+
+    conn.close()

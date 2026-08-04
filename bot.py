@@ -40,7 +40,6 @@ vk = vk_session.get_api()
 create_database()
 
 
-
 # ======================================
 # Проверка подписки
 # ======================================
@@ -68,7 +67,7 @@ def create_keyboard():
 
 
     keyboard.add_openlink_button(
-        "Подписаться на сообщество",
+        "➡️ Подписаться",
         "https://vk.ru/club240524894"
     )
 
@@ -77,7 +76,7 @@ def create_keyboard():
 
 
     keyboard.add_button(
-        "Проверить подписку",
+        "✅ Проверить подписку",
         color=VkKeyboardColor.PRIMARY
     )
 
@@ -105,6 +104,32 @@ def send_message(
         message=text,
 
         keyboard=keyboard
+    )
+
+
+
+# ======================================
+# Приветствие
+# ======================================
+
+def send_welcome(user_id):
+
+    send_message(
+
+        user_id,
+
+        """
+👋 Добро пожаловать! Здесь вы можете получить подарочный сертификат от «Окошкино»🎁
+
+Это займет меньше минуты:
+
+1️⃣ Подпишитесь на наше сообщество
+2️⃣ Нажмите кнопку проверки подписки
+3️⃣ Получите свой сертификат прямо в этом чате
+""",
+
+        create_keyboard()
+
     )
 
 
@@ -138,6 +163,7 @@ def send_photo(user_id):
         random_id=0,
 
         attachment=attachment
+
     )
 
 
@@ -148,8 +174,6 @@ def send_photo(user_id):
 
 def send_certificate(user_id):
 
-
-    # Проверяем, был ли сертификат раньше
 
     if certificate_already_sent(user_id):
 
@@ -162,6 +186,7 @@ def send_certificate(user_id):
 
 Спасибо за участие!
 """
+
         )
 
         return
@@ -173,15 +198,17 @@ def send_certificate(user_id):
         user_id,
 
         """
-🎁 Ваш сертификат готов!
+✅ Отлично! Подписка подтверждена 
+Ваш подарочный сертификат готов 🎁
 
 
 Условия использования:
 
-- действует 30 дней
-- один сертификат на пользователя
-- предъявите его при покупке
+• срок действия - бессрочно
+• один сертификат на одного пользователя
+• предъявите сертификат при покупке
 """
+
     )
 
 
@@ -208,11 +235,10 @@ def send_certificate(user_id):
 
 
 # ======================================
-# Формирование статистики
+# Статистика
 # ======================================
 
 def create_statistics_message():
-
 
     total, subscribed, certificates, refs = get_statistics()
 
@@ -250,7 +276,6 @@ def create_statistics_message():
         message += "\nНет данных"
 
 
-
     return message
 
 
@@ -281,7 +306,6 @@ def process_message(message):
 
         if user_id == ADMIN_ID:
 
-
             send_message(
 
                 user_id,
@@ -290,9 +314,7 @@ def process_message(message):
 
             )
 
-
         else:
-
 
             send_message(
 
@@ -349,66 +371,15 @@ def process_message(message):
 
 
     # -------------------------------
-    # Команда Начать
+    # Начать
     # -------------------------------
 
     if text == "начать":
 
 
-
-        if check_subscription(
+        send_welcome(
             user_id
-        ):
-
-
-            update_subscription(
-                user_id
-            )
-
-
-            if not event_exists(
-
-                user_id,
-
-                "subscribe"
-
-            ):
-
-                add_event(
-
-                    user_id,
-
-                    "subscribe"
-
-                )
-
-
-            send_certificate(
-
-                user_id
-
-            )
-
-
-
-        else:
-
-
-            send_message(
-
-                user_id,
-
-
-                """
-Для получения сертификата необходимо подписаться на наше сообщество.
-
-После подписки нажмите кнопку "Проверить подписку".
-""",
-
-
-                create_keyboard()
-
-            )
+        )
 
 
 
@@ -419,17 +390,13 @@ def process_message(message):
     elif text == "проверить подписку":
 
 
-
         if check_subscription(
             user_id
         ):
 
 
-
             update_subscription(
-
                 user_id
-
             )
 
 
@@ -452,9 +419,7 @@ def process_message(message):
 
 
             send_certificate(
-
                 user_id
-
             )
 
 
@@ -466,13 +431,11 @@ def process_message(message):
 
                 user_id,
 
-
                 """
-Подписка не найдена.
+❌ Мы пока не нашли вашу подписку.
 
-Пожалуйста, подпишитесь на наше сообщество.
+Пожалуйста, подпишитесь на наше сообщество и попробуйте проверить еще раз
 """,
-
 
                 create_keyboard()
 

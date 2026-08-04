@@ -82,3 +82,5 @@ CERTIFICATE_PATH = os.path.join(
     BASE_DIR,
     "certificate.jpg"
 )
+
+REMINDER_IMAGE_PATH = "reminder.jpg"
