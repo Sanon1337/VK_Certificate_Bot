@@ -9,10 +9,27 @@ services:
     restart: always
 
     ports:
-      - "5001:5000"
+      - "127.0.0.1:5001:5000"
 
     env_file:
       - .env
 
     volumes:
       - ./users.db:/app/users.db
+
+
+  vk_reminder:
+
+    build: .
+
+    container_name: vk_reminder
+
+    restart: always
+
+    env_file:
+      - .env
+
+    volumes:
+      - ./users.db:/app/users.db
+
+    command: python reminder.py

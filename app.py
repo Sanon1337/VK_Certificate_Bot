@@ -15,8 +15,7 @@ def callback():
 
     data = request.get_json()
 
-
-    print(data)
+    print(data, flush=True)
 
 
 
@@ -57,7 +56,8 @@ def callback():
 
             print(
                 "Ошибка обработки сообщения:",
-                error
+                error,
+		flush=True
             )
 
 

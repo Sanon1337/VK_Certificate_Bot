@@ -293,7 +293,7 @@ def process_message(message):
     text = message.get(
         "text",
         ""
-    ).lower()
+    ).lower().replace("✅", "").strip()
 
 
 
