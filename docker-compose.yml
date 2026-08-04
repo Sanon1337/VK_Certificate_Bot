@@ -1,0 +1,18 @@
+services:
+
+  vk_certificate_bot:
+
+    build: .
+
+    container_name: vk_certificate_bot
+
+    restart: always
+
+    ports:
+      - "5001:5000"
+
+    env_file:
+      - .env
+
+    volumes:
+      - ./users.db:/app/users.db

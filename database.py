@@ -57,11 +57,11 @@ def create_database():
 
             vk_id INTEGER,
 
-            event TEXT,
+            event_name TEXT,
 
             event_date TEXT,
 
-            UNIQUE(vk_id,event)
+            UNIQUE(vk_id,event_name)
 
         )
     """)
@@ -300,7 +300,7 @@ def add_event(vk_id, event):
         INSERT INTO events
         (
             vk_id,
-            event,
+            event_name,
             event_date
         )
 
@@ -336,7 +336,7 @@ def event_exists(vk_id, event):
         SELECT id
         FROM events
         WHERE vk_id = ?
-        AND event = ?
+        AND event_name = ?
     """,
     (
         vk_id,
@@ -351,6 +351,7 @@ def event_exists(vk_id, event):
 
 
     return result is not None
+<<<<<<< HEAD
 
 def get_users_for_reminder():
 
@@ -401,3 +402,5 @@ def update_reminder(vk_id):
     conn.commit()
 
     conn.close()
+=======
+>>>>>>> ffdaf9727c0236415ca2961709e7c04d4ec55b9f
